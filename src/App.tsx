@@ -1,9 +1,23 @@
+import {
+  Route,
+  RouterProvider,
+  createBrowserRouter,
+  createRoutesFromElements,
+} from "react-router-dom";
+import { Login } from "./pages/login";
+import { Livros } from "./pages/livros";
+
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path="/">
+      <Route index path="login" element={<Login />} />
+      <Route path="livros" element={<Livros />} />
+    </Route>
+  )
+);
+
 function App() {
-  return (
-    <div>
-      <h1 className="text-red">Hello</h1>
-    </div>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
