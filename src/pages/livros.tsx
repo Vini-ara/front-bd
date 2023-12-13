@@ -3,61 +3,59 @@ import { Formik, Form } from "formik";
 import Modal from "react-modal";
 import { Input } from "../components/input";
 
-// const allItems = [
-//   { id: 1, name: "Item 1", category: "Category A", autor: "Jonas" },
-//   { id: 2, name: "Item 2", category: "Category B", autor: "James" },
-//   // Add more items
-// ];
-
-type Livro = {
-  id: number;
-  titulo: string;
+type Item = {
+  id_item: number;
+  descricao: string;
   categoria: string;
-  nome_autor: string;
-  data_aquisicao: Date;
-  estado_conservacao: string;
-  isbn: string;
+  dataAquisicao: Date;
+  estadoConservacao: string;
   localizacao: string;
   url_foto_item: string;
+  titulo?: string;
+  nome_autor?: string;
+  isbn?: string;
+  numserie?: number;
+};
+
+type InitialValues = {
+  Titulo: string;
+  Autor: string;
+  Categoria: string;
+  ISBN: string;
 };
 
 export function Livros() {
-  const [allItems, setAllItems] = useState<Livro[]>([]);
-  const [searchResults, setSearchResults] = useState<Livro[]>([]);
-  const [selectedItem, setSelectedItem] = useState<Livro | null>(null);
+  const [allItems, setAllItems] = useState<Item[]>([]);
+  const [searchResults, setSearchResults] = useState<Item[]>([]);
+  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
 
   useEffect(() => {
-    fetch("http://localhost:3000/livro")
-      .then((data) => data.json())
-      .then((data) => {
-        console.log(data);
-        setSearchResults(data);
-        setAllItems(data);
-      });
-    fetch("http://localhost:3000/material-didatico")
-      .then((data) => data.json())
-      .then((data) => {
-        console.log(data);
-        setSearchResults((prev) => [...prev, ...data]);
-        setAllItems((prev) => [...prev, ...data]);
-      });
+    async function fetchData() {
+      const livrosData = await fetch("http://localhost:3000/livro");
+      const livros = await livrosData.json();
+      const materiaisData = await fetch(
+        "http://localhost:3000/material-didatico"
+      );
+      const materiais = await materiaisData.json();
+      setAllItems(
+        [...livros, ...materiais].sort((a, b) => a.id_item - b.id_item)
+      );
+      setSearchResults(
+        [...livros, ...materiais].sort((a, b) => a.id_item - b.id_item)
+      );
+    }
+    fetchData();
   }, []);
 
-  const handleSearch = (values, { setSubmitting }) => {
-    const filteredItems = allItems.filter((item: Livro) => {
-      return (
-        item.name.toLowerCase().includes(values.Titulo.toLowerCase()) &&
-        item.category.toLowerCase().includes(values.Categoria.toLowerCase()) &&
-        item.author.toLowerCase().includes(values.Autor.toLowerCase()) &&
-        item.ISBN.toLowerCase().includes(values.ISBN.toLowerCase())
-      );
-    });
-
-    setSearchResults(filteredItems);
-    setSubmitting(false);
+  const handleSearch = (values: InitialValues) => {
+    // const filteredItems = allItems.filter((item: Item) => {
+    //
+    // });
+    //
+    // setSearchResults(filteredItems);
   };
 
-  const openModal = (item: Livro) => {
+  const openModal = (item: Item) => {
     setSelectedItem(item);
   };
 
@@ -66,7 +64,7 @@ export function Livros() {
   };
 
   const realizarEmprestimo = () => {
-    console.log(`Buying ${selectedItem?.nome}`);
+    console.log(`Buying ${selectedItem?.id_item}`);
     closeModal();
   };
 
@@ -78,8 +76,6 @@ export function Livros() {
           Autor: "",
           Categoria: "",
           ISBN: "",
-          minPrice: "",
-          maxPrice: "",
         }}
         onSubmit={handleSearch}
       >
@@ -106,11 +102,14 @@ export function Livros() {
         <ul>
           {searchResults.map((item) => (
             <li
-              key={item.id}
-              onClick={() => openModal(item)}
+              key={item.id_item}
               className="p-4 bg-secondary mb-4 rounded-xl cursor-pointer hover:brightness-90"
             >
-              <p>{`Título: ${item.titulo} - Categoria: ${item.categoria} - Autor: ${item.nome_autor}`}</p>
+              {item.isbn ? (
+                <p>{`Livro - Título: ${item.titulo} - Categoria: ${item.categoria} - Autor: ${item.nome_autor}`}</p>
+              ) : (
+                <p>{`Material-didático - Categoria: ${item.categoria} - Número de série - ${item.numserie}`}</p>
+              )}
             </li>
           ))}
         </ul>
@@ -119,7 +118,9 @@ export function Livros() {
       <Modal isOpen={selectedItem !== null} onRequestClose={closeModal}>
         {selectedItem && (
           <div style={{ padding: "20px" }}>
-            <h2>{selectedItem.nome}</h2>
+            <h2>
+              {selectedItem.titulo ? selectedItem.titulo : "Material Didático"}
+            </h2>
             <p>{`Categoria: ${selectedItem.categoria}`}</p>
             <p>{`Autor: ${selectedItem.nome_autor}`}</p>
             <div style={{ marginTop: "20px", textAlign: "center" }}>

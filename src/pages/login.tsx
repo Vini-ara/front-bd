@@ -1,22 +1,36 @@
-import { Field, Formik, Form } from "formik";
+import { Formik, Form } from "formik";
 import { Input } from "../components/input";
+import { useNavigate } from "react-router-dom";
 
 type InitialValues = {
-  email: string;
+  login: string;
   senha: string;
 };
 
 export function Login() {
+  const navigate = useNavigate();
+
   return (
     <div className="h-[100vh] flex items-center">
       <Formik
-        initialValues={{ email: "", senha: "" }}
+        initialValues={{ login: "", senha: "" }}
         onSubmit={async (values: InitialValues) => {
           try {
-            await fetch("", {
+            const data = await fetch("http://localhost:3000/auth/login", {
               method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
               body: JSON.stringify(values),
             });
+
+            const response = await data.json();
+
+            localStorage.setItem("token", response.token);
+
+            if (response.user.role === "admin") navigate("/admin");
+            else if (response.user.role === "user") navigate("/livros");
+            else navigate("/gerenciar-itens");
           } catch (error) {
             console.log(error);
           }
@@ -25,7 +39,7 @@ export function Login() {
         {() => (
           <Form className="max-w-4xl flex flex-col bg-tertiary rounded-xl p-8 m-auto gap-4">
             <h1 className="text-2xl text-center">Login</h1>
-            <Input name="email" type="email" placeholder="email" />
+            <Input name="login" type="text" placeholder="login" />
             <Input name="senha" type="password" placeholder="senha" />
             <button
               type="submit"

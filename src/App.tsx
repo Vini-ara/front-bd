@@ -6,14 +6,14 @@ import {
 } from "react-router-dom";
 import { Login } from "./pages/login";
 import { Livros } from "./pages/livros";
-import { GerenciarItems } from "./pages/gerenciarItems";
+import { GerenciarItens } from "./pages/gerenciarItens";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/">
       <Route index path="login" element={<Login />} />
       <Route path="livros" element={<Livros />} />
-      <Route path="gerenciar-items" element={<GerenciarItems />} />
+      <Route path="gerenciar-itens" element={<GerenciarItens />} />
     </Route>
   )
 );
