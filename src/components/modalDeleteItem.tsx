@@ -1,3 +1,4 @@
+import { useAuth } from "../hooks/auth";
 import { ItemReturn } from "../types/types";
 import Modal from "react-modal";
 
@@ -29,14 +30,22 @@ export function ModalDeleteItem({
   handleClose,
   isOpen,
 }: ModalDeleteItemProps) {
+  const { token }: any = useAuth();
+
   function handleDeleteItem() {
     if (item.isbn) {
       fetch(`http://localhost:3000/livro/${item.id}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
     } else {
       fetch(`http://localhost:3000/material-didatico/${item.id}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
     }
     handleClose();

@@ -2,6 +2,7 @@ import { Field, Form, Formik } from "formik";
 import Modal from "react-modal";
 import { ItemReturn } from "../types/types";
 import moment from "moment";
+import { useAuth } from "../hooks/auth";
 
 const modalStyle = {
   overlay: {
@@ -31,6 +32,8 @@ export function ModalEditarItem({
   handleClose,
   item,
 }: ModalEditarItemProps) {
+  const { user, token }: any = useAuth();
+
   return (
     <Modal style={modalStyle} isOpen={isOpen} onRequestClose={handleClose}>
       <div className="p-8">
@@ -57,6 +60,7 @@ export function ModalEditarItem({
                 method: "PUT",
                 headers: {
                   "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify(newValues),
               });
@@ -77,6 +81,7 @@ export function ModalEditarItem({
                 method: "PUT",
                 headers: {
                   "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify(newValues),
               });

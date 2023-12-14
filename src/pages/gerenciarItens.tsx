@@ -6,6 +6,8 @@ import { ModalCriarItem } from "../components/modalCriarItem";
 import { Item, ItemReturn } from "../types/types";
 import { ModalDeleteItem } from "../components/modalDeleteItem";
 import { ModalEditarItem } from "../components/modalEditarItem";
+import { useAuth } from "../hooks/auth";
+import { useNavigate } from "react-router-dom";
 
 export function GerenciarItens() {
   const [allItems, setAllItems] = useState<ItemReturn[]>([]);
@@ -15,19 +17,41 @@ export function GerenciarItens() {
   const [deleteModalIsOpen, setDeleteModalIsOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<ItemReturn | null>(null);
 
+  const { user, token, logout }: any = useAuth();
+  console.log(useAuth());
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/");
+      return;
+    }
+
+    if (user.funcao === "Estudante") {
+      alert(
+        "Você precisa ser um administrador ou funcionario para ver esta pagina"
+      );
+      navigate("/itens");
+      return;
+    }
+  }, [user, token, navigate, logout]);
+
   useEffect(() => {
     async function fetchData() {
-      const livrosData = await fetch("http://localhost:3000/livro");
+      const livrosData = await fetch("http://localhost:3000/livro", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const livros = await livrosData.json();
       const materiaisData = await fetch(
-        "http://localhost:3000/material-didatico"
+        "http://localhost:3000/material-didatico",
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       const materiais = await materiaisData.json();
       setAllItems([...livros, ...materiais].sort((a, b) => a.id - b.id));
       setSearchResults([...livros, ...materiais].sort((a, b) => a.id - b.id));
     }
     fetchData();
-  }, [deleteModalIsOpen, editModalIsOpen]);
+  }, [deleteModalIsOpen, editModalIsOpen, createModalIsOpen, token]);
 
   function handleEditItem(id: number) {
     const item = allItems.find((item) => item.id === id);
@@ -57,12 +81,20 @@ export function GerenciarItens() {
     <div className="mt-8 max-w-3xl m-auto">
       <div className="flex justify-between mb-4 items-end">
         <h2 className="text-xl mb-2">Itens:</h2>
-        <button
-          onClick={() => setCreateModalIsOpen(true)}
-          className="p-4 bg-secondary rounded-xl font-bold hover:brightness-90 transition"
-        >
-          Novo Item
-        </button>
+        <div>
+          <button
+            onClick={() => setCreateModalIsOpen(true)}
+            className="mr-4 p-4 bg-secondary rounded-xl font-bold hover:brightness-90 transition"
+          >
+            Novo Item
+          </button>
+          <button
+            onClick={logout}
+            className="p-4 bg-highlight rounded-xl text-white font-bold hover:brightness-90 transition"
+          >
+            Sair
+          </button>
+        </div>
       </div>
 
       <ul>
