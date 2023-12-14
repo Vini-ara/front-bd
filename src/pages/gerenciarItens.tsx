@@ -1,9 +1,7 @@
-import { Field, Form, Formik } from "formik";
 import { useEffect, useState } from "react";
 import { MdDelete, MdEdit } from "react-icons/md";
-import Modal from "react-modal";
 import { ModalCriarItem } from "../components/modalCriarItem";
-import { Item, ItemReturn } from "../types/types";
+import { ItemReturn } from "../types/types";
 import { ModalDeleteItem } from "../components/modalDeleteItem";
 import { ModalEditarItem } from "../components/modalEditarItem";
 import { useAuth } from "../hooks/auth";

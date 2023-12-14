@@ -12,7 +12,6 @@ type ValuesType = {
 const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState(() => {
     const user = localStorage.getItem("user");
-    console.log(user);
     if (user) return JSON.parse(user);
     else return null;
   });
@@ -34,7 +33,7 @@ const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
       const data = await response.json();
 
-      localStorage.setItem("token", JSON.stringify(data.access_token));
+      localStorage.setItem("token", data.access_token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
       setUser(data.user);
