@@ -5,14 +5,14 @@ import {
   createRoutesFromElements,
 } from "react-router-dom";
 import { Login } from "./pages/login";
-import { Livros } from "./pages/livros";
 import { GerenciarItens } from "./pages/gerenciarItens";
+import { Itens } from "./pages/itens";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/">
-      <Route index path="login" element={<Login />} />
-      <Route path="livros" element={<Livros />} />
+      <Route index element={<Login />} />
+      <Route path="itens" element={<Itens />} />
       <Route path="gerenciar-itens" element={<GerenciarItens />} />
     </Route>
   )

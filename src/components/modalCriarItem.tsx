@@ -23,6 +23,34 @@ interface ModalCriarItemProps {
   handleCloseModal: () => void;
 }
 
+type InitialValues = {
+  tipo: string;
+  titulo: string;
+  isbn: string;
+  nome_autor: string;
+  numSerie: string;
+  descricao: string;
+  categoria: string;
+  dataAquisicao: string;
+  estadoConservacao: string;
+  localizacao: string;
+  url_foto_de_item: string;
+};
+
+const initialValues: InitialValues = {
+  tipo: "",
+  titulo: "",
+  isbn: "",
+  nome_autor: "",
+  numSerie: "",
+  descricao: "",
+  categoria: "",
+  dataAquisicao: "",
+  estadoConservacao: "",
+  localizacao: "",
+  url_foto_de_item: "",
+};
+
 export function ModalCriarItem({
   isOpen,
   handleCloseModal,
@@ -30,7 +58,50 @@ export function ModalCriarItem({
   return (
     <Modal isOpen={isOpen} style={modalStyle} onRequestClose={handleCloseModal}>
       <div className="p-8">
-        <Formik initialValues={{}} onSubmit={() => {}}>
+        <Formik
+          initialValues={initialValues}
+          onSubmit={async (values: InitialValues) => {
+            const { tipo, ...newValues } = values;
+
+            if (tipo === "livro") {
+              const { numSerie, ...createLivroData } = newValues;
+              console.log(JSON.stringify(createLivroData));
+              await fetch("http://localhost:3000/livro", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(createLivroData),
+              });
+            } else {
+              const {
+                numSerie,
+                descricao,
+                categoria,
+                dataAquisicao,
+                estadoConservacao,
+                localizacao,
+                url_foto_de_item,
+              } = newValues;
+              console.log(localizacao);
+              await fetch("http://localhost:3000/material-didatico", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  numSerie: +numSerie,
+                  descricao,
+                  categoria,
+                  dataAquisicao,
+                  estadoConservacao,
+                  localizacao,
+                  url_foto_de_item,
+                }),
+              });
+            }
+          }}
+        >
           {({ values }) => (
             <Form>
               <h2 className="mb-4 text-2xl font-bold">Criar Item</h2>
@@ -93,11 +164,11 @@ export function ModalCriarItem({
                     </>
                   ) : (
                     <div className="flex flex-col">
-                      <label htmlFor="numserie">Número de Série</label>
+                      <label htmlFor="numSerie">Número de Série</label>
                       <Field
-                        id="numserie"
-                        name="numserie"
-                        type="text"
+                        id="numSerie"
+                        name="numSerie"
+                        type="number"
                         className="p-2 rounded-xl border-2 border-gray-300"
                       />
                     </div>
@@ -150,10 +221,12 @@ export function ModalCriarItem({
                     />
                   </div>
                   <div className="flex flex-col">
-                    <label htmlFor="url_foto_item">Url da foto do item</label>
+                    <label htmlFor="url_foto_de_item">
+                      Url da foto do item
+                    </label>
                     <Field
-                      id="url_foto_item"
-                      name="url_foto_item"
+                      id="url_foto_de_item"
+                      name="url_foto_de_item"
                       type="text"
                       className="p-2 rounded-xl border-2 border-gray-300"
                     />

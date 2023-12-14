@@ -3,14 +3,17 @@ import { useEffect, useState } from "react";
 import { MdDelete, MdEdit } from "react-icons/md";
 import Modal from "react-modal";
 import { ModalCriarItem } from "../components/modalCriarItem";
-import { Item } from "../types/types";
+import { Item, ItemReturn } from "../types/types";
+import { ModalDeleteItem } from "../components/modalDeleteItem";
+import { ModalEditarItem } from "../components/modalEditarItem";
 
 export function GerenciarItens() {
-  const [allItems, setAllItems] = useState<Item[]>([]);
-  const [searchResults, setSearchResults] = useState<Item[]>([]);
+  const [allItems, setAllItems] = useState<ItemReturn[]>([]);
+  const [searchResults, setSearchResults] = useState<ItemReturn[]>([]);
   const [createModalIsOpen, setCreateModalIsOpen] = useState(false);
   const [editModalIsOpen, setEditModalIsOpen] = useState(false);
   const [deleteModalIsOpen, setDeleteModalIsOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<ItemReturn | null>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -24,17 +27,27 @@ export function GerenciarItens() {
       setSearchResults([...livros, ...materiais].sort((a, b) => a.id - b.id));
     }
     fetchData();
-  }, []);
+  }, [deleteModalIsOpen, editModalIsOpen]);
 
   function handleEditItem(id: number) {
-    console.log(id);
+    const item = allItems.find((item) => item.id === id);
+    console.log(allItems);
+    if (item) {
+      setSelectedItem(item);
+      setEditModalIsOpen(true);
+    }
   }
 
   function handleDelete(id: number) {
-    console.log(id);
+    const item = allItems.find((item) => item.id === id);
+    if (item) {
+      setSelectedItem(item);
+      setDeleteModalIsOpen(true);
+    }
   }
 
   function handleCloseModal() {
+    setSelectedItem(null);
     setCreateModalIsOpen(false);
     setEditModalIsOpen(false);
     setDeleteModalIsOpen(false);
@@ -55,7 +68,7 @@ export function GerenciarItens() {
       <ul>
         {searchResults.map((item) => (
           <li key={item.id} className="p-4 bg-secondary mb-4 rounded-xl">
-            <p className="flex justify-between">
+            <div className="flex justify-between">
               {item.numserie
                 ? `Material-didático - Categoria: ${item.categoria} - Número de série - ${item.numserie}`
                 : `Livro - Título: ${item.titulo} - Categoria: ${item.categoria} - Autor: ${item.nome_autor}`}
@@ -74,7 +87,7 @@ export function GerenciarItens() {
                   <MdDelete color="white" />
                 </button>
               </div>
-            </p>
+            </div>
           </li>
         ))}
       </ul>
@@ -83,6 +96,20 @@ export function GerenciarItens() {
         isOpen={createModalIsOpen}
         handleCloseModal={handleCloseModal}
       />
+      {selectedItem && (
+        <ModalDeleteItem
+          isOpen={deleteModalIsOpen}
+          handleClose={handleCloseModal}
+          item={selectedItem}
+        />
+      )}
+      {selectedItem && (
+        <ModalEditarItem
+          isOpen={editModalIsOpen}
+          handleClose={handleCloseModal}
+          item={selectedItem}
+        />
+      )}
     </div>
   );
 }

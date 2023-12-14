@@ -2,20 +2,8 @@ import { useState, useEffect } from "react";
 import { Formik, Form } from "formik";
 import Modal from "react-modal";
 import { Input } from "../components/input";
-
-type Item = {
-  id_item: number;
-  descricao: string;
-  categoria: string;
-  dataAquisicao: Date;
-  estadoConservacao: string;
-  localizacao: string;
-  url_foto_item: string;
-  titulo?: string;
-  nome_autor?: string;
-  isbn?: string;
-  numserie?: number;
-};
+import { ItemReturn } from "../types/types";
+import { ModalEmprestimo } from "../components/modalEmprestimo";
 
 type InitialValues = {
   Titulo: string;
@@ -24,10 +12,10 @@ type InitialValues = {
   ISBN: string;
 };
 
-export function Livros() {
-  const [allItems, setAllItems] = useState<Item[]>([]);
-  const [searchResults, setSearchResults] = useState<Item[]>([]);
-  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+export function Itens() {
+  const [allItems, setAllItems] = useState<ItemReturn[]>([]);
+  const [searchResults, setSearchResults] = useState<ItemReturn[]>([]);
+  const [selectedItem, setSelectedItem] = useState<ItemReturn | null>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -102,7 +90,8 @@ export function Livros() {
         <ul>
           {searchResults.map((item) => (
             <li
-              key={item.id_item}
+              key={item.id}
+              onClick={() => setSelectedItem(item)}
               className="p-4 bg-secondary mb-4 rounded-xl cursor-pointer hover:brightness-90"
             >
               {item.isbn ? (
@@ -115,23 +104,14 @@ export function Livros() {
         </ul>
       </div>
 
-      <Modal isOpen={selectedItem !== null} onRequestClose={closeModal}>
-        {selectedItem && (
-          <div style={{ padding: "20px" }}>
-            <h2>
-              {selectedItem.titulo ? selectedItem.titulo : "Material Didático"}
-            </h2>
-            <p>{`Categoria: ${selectedItem.categoria}`}</p>
-            <p>{`Autor: ${selectedItem.nome_autor}`}</p>
-            <div style={{ marginTop: "20px", textAlign: "center" }}>
-              <button onClick={realizarEmprestimo}>Pegar Emprestado</button>
-              <button onClick={closeModal} style={{ marginLeft: "10px" }}>
-                Close
-              </button>
-            </div>
-          </div>
-        )}
-      </Modal>
+      {selectedItem && (
+        <ModalEmprestimo
+          isOpen={selectedItem !== null}
+          handleClose={closeModal}
+          id={selectedItem.id}
+          itemType={selectedItem?.isbn ? "livro" : "material"}
+        />
+      )}
     </div>
   );
 }
