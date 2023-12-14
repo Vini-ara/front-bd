@@ -32,12 +32,32 @@ export function Itens() {
   }, []);
 
   const handleSearch = (values: InitialValues) => {
-    // const filteredItems = allItems.filter((item: Item) => {
-    //
-    // });
-    //
-    // setSearchResults(filteredItems);
+    var { Titulo, Autor, Categoria, ISBN } = values;
+    if (Titulo === '') {
+      Titulo = '0000000000000';
+    }
+    if (Autor === '') {
+      Autor = '0000000000000';
+    }
+    if (Categoria === '') {
+      Categoria = '0000000000000';
+    }
+    if (ISBN === '') {
+      ISBN = '0000000000000';
+    }
+  
+    const filteredItems = allItems.filter((item: ItemReturn) => {
+      const titleMatch = item.titulo?.toLowerCase().includes(Titulo.toLowerCase());
+      const authorMatch = item.nome_autor?.toLowerCase().includes(Autor.toLowerCase());
+      const categoryMatch = item.categoria.toLowerCase().includes(Categoria.toLowerCase());
+      const isbnMatch = item.isbn?.toLowerCase().includes(ISBN.toLowerCase()) || false;
+      const descricaoMatch = item.descricao?.toLowerCase().includes(Titulo.toLowerCase());
+      return titleMatch || authorMatch || categoryMatch || isbnMatch || descricaoMatch;
+    });
+    console.log(filteredItems);
+    setSearchResults(filteredItems);
   };
+  
 
   const openModal = (item: Item) => {
     setSelectedItem(item);
@@ -93,7 +113,7 @@ export function Itens() {
               {item.isbn ? (
                 <p>{`Livro - Título: ${item.titulo} - Categoria: ${item.categoria} - Autor: ${item.nome_autor}`}</p>
               ) : (
-                <p>{`Material-didático - Categoria: ${item.categoria} - Número de série - ${item.numserie}`}</p>
+                <p>{`Material-didático: ${item.descricao} - Categoria: ${item.categoria} - Número de série - ${item.numserie}`}</p>
               )}
             </li>
           ))}
