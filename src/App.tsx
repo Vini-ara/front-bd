@@ -7,6 +7,7 @@ import {
 import { Login } from "./pages/login";
 import { GerenciarItens } from "./pages/gerenciarItens";
 import { Itens } from "./pages/itens";
+import { Cadastro } from "./pages/cadastro";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -14,6 +15,7 @@ const router = createBrowserRouter(
       <Route index element={<Login />} />
       <Route path="itens" element={<Itens />} />
       <Route path="gerenciar-itens" element={<GerenciarItens />} />
+      <Route path="cadastro" element={<Cadastro />} />
     </Route>
   )
 );

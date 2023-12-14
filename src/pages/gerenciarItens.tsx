@@ -6,6 +6,7 @@ import { ModalCriarItem } from "../components/modalCriarItem";
 import { Item, ItemReturn } from "../types/types";
 import { ModalDeleteItem } from "../components/modalDeleteItem";
 import { ModalEditarItem } from "../components/modalEditarItem";
+import { Link } from "react-router-dom";
 
 export function GerenciarItens() {
   const [allItems, setAllItems] = useState<ItemReturn[]>([]);
@@ -55,6 +56,19 @@ export function GerenciarItens() {
 
   return (
     <div className="mt-8 max-w-3xl m-auto">
+      <nav className="mt-8 text-white p-4">
+        <div className="max-w-3xl mx-auto flex justify-center items-center">
+          <ul className="flex space-x-4">
+            <li>
+              <button className="p-4 bg-secondary rounded-xl font-bold hover:brightness-90 transition">
+                <Link to="/itens" className="hover:text-gray-300">
+                  Itens
+                </Link>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </nav>
       <div className="flex justify-between mb-4 items-end">
         <h2 className="text-xl mb-2">Itens:</h2>
         <button
@@ -70,7 +84,7 @@ export function GerenciarItens() {
           <li key={item.id} className="p-4 bg-secondary mb-4 rounded-xl">
             <div className="flex justify-between">
               {item.numserie
-                ? `Material-didático - Categoria: ${item.categoria} - Número de série - ${item.numserie}`
+                ? `Material-didático: ${item.descricao} - Categoria: ${item.categoria} - Número de série - ${item.numserie}`
                 : `Livro - Título: ${item.titulo} - Categoria: ${item.categoria} - Autor: ${item.nome_autor}`}
 
               <div className="flex gap-4">

@@ -68,7 +68,6 @@ export function Itens() {
   };
 
   const realizarEmprestimo = () => {
-    console.log(`Buying ${selectedItem?.id_item}`);
     closeModal();
   };
 
