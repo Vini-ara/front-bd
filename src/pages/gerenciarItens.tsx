@@ -20,6 +20,10 @@ export function GerenciarItens() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    document.title = "Gerenciar Itens";
+  }, []);
+
+  useEffect(() => {
     if (!token) {
       navigate("/");
       return;

@@ -16,6 +16,8 @@ export function Login() {
 
   useEffect(() => {
     localStorage.clear();
+
+    document.title = "Login";
   }, []);
 
   return (

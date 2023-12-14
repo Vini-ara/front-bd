@@ -23,6 +23,10 @@ export function Itens() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    document.title = "Itens";
+  }, []);
+
+  useEffect(() => {
     if (!user || !token) {
       alert("Você precisa estar logado para ver os itens");
       navigate("/");
