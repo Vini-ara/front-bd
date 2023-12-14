@@ -8,6 +8,7 @@ import { Login } from "./pages/login";
 import { GerenciarItens } from "./pages/gerenciarItens";
 import { Itens } from "./pages/itens";
 import { Cadastro } from "./pages/cadastro";
+import { AuthContextProvider } from "./hooks/auth";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -21,7 +22,11 @@ const router = createBrowserRouter(
 );
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <AuthContextProvider>
+      <RouterProvider router={router} />;
+    </AuthContextProvider>
+  );
 }
 
 export default App;

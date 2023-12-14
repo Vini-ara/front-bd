@@ -3,6 +3,7 @@ import Modal from "react-modal";
 import { ItemReturn, emprestimoReturn } from "../types/types";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/auth";
 
 const modalStyle = {
   overlay: {
@@ -37,7 +38,7 @@ export function ModalEmprestimo({
 
   const [isEmprestado, setIsEmprestado] = useState(false);
 
-  const user = localStorage.getItem("user");
+  const { user, token }: any = useAuth();
 
   const navigate = useNavigate();
 
@@ -49,18 +50,29 @@ export function ModalEmprestimo({
   useEffect(() => {
     async function fetchData() {
       if (itemType === "livro") {
-        const livro = await fetch(`http://localhost:3000/livro/${id}`);
+        const livro = await fetch(`http://localhost:3000/livro/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const livroData = await livro.json();
         setItem(livroData);
       } else {
         const material = await fetch(
-          `http://localhost:3000/material-didatico/${id}`
+          `http://localhost:3000/material-didatico/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
         const materialData = await material.json();
         setItem(materialData);
       }
 
-      const emprestimos = await fetch("http://localhost:3000/emprestimo");
+      const emprestimos = await fetch("http://localhost:3000/emprestimo", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const emprestimosData = await emprestimos.json();
 
       const emprestimoExistente = emprestimosData.find(
@@ -74,7 +86,7 @@ export function ModalEmprestimo({
       }
     }
     fetchData();
-  }, [id, itemType]);
+  }, [id, itemType, token]);
 
   return (
     <Modal style={modalStyle} isOpen={isOpen} onRequestClose={handleClose}>
@@ -137,13 +149,13 @@ export function ModalEmprestimo({
               <button
                 className="p-4 bg-secondary rounded-xl font-bold hover:brightness-90"
                 onClick={async () => {
-                  if (!user) {
+                  if (!user || !token) {
                     alert("Você precisa estar logado para pegar emprestado");
                     navigate("/login");
                     return;
                   }
 
-                  const id_usuario = JSON.parse(user).id_usuario;
+                  const id_usuario = user.id_usuario;
 
                   const payload = {
                     id_item: +id,
@@ -157,6 +169,7 @@ export function ModalEmprestimo({
                     method: "POST",
                     headers: {
                       "Content-Type": "application/json",
+                      Authorization: `Bearer ${token}`,
                     },
                     body: JSON.stringify(payload),
                   });
@@ -167,8 +180,9 @@ export function ModalEmprestimo({
               </button>
             )}
             {user &&
+              token &&
               isEmprestado &&
-              emprestimo?.id_usuario === JSON.parse(user).id_usuario && (
+              emprestimo?.id_usuario === user.id_usuario && (
                 <button
                   className="p-4 bg-highlight rounded-xl text-white font-bold hover:brightness-75"
                   onClick={async () => {
@@ -178,6 +192,7 @@ export function ModalEmprestimo({
                         method: "PATCH",
                         headers: {
                           "Content-Type": "application/json",
+                          Authorization: `Bearer ${token}`,
                         },
                         body: JSON.stringify({
                           status: "D",

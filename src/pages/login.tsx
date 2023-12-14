@@ -1,6 +1,8 @@
 import { Formik, Form } from "formik";
 import { Input } from "../components/input";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/auth";
+import { useEffect } from "react";
 
 type InitialValues = {
   login: string;
@@ -8,7 +10,15 @@ type InitialValues = {
 };
 
 export function Login() {
+  const { login }: any = useAuth();
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    localStorage.clear();
+
+    document.title = "Login";
+  }, []);
 
   return (
     <div className="h-[100vh] flex items-center">
@@ -16,21 +26,11 @@ export function Login() {
         initialValues={{ login: "", senha: "" }}
         onSubmit={async (values: InitialValues) => {
           try {
-            const data = await fetch("http://localhost:3000/auth/login", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(values),
-            });
+            const response = await login(values);
 
-            const response = await data.json();
-
-            localStorage.setItem("token", response.token);
-            localStorage.setItem("user", JSON.stringify(response.user));
-
-            if (response.user.role === "admin") navigate("/admin");
-            else if (response.user.role === "user") navigate("/livros");
+            if (response.user.funcao === "Administrador")
+              navigate("/gerenciar-itens");
+            else if (response.user.funcao === "Estudante") navigate("/itens");
             else navigate("/gerenciar-itens");
           } catch (error) {
             console.log(error);

@@ -1,5 +1,6 @@
 import { Field, Form, Formik } from "formik";
 import Modal from "react-modal";
+import { useAuth } from "../hooks/auth";
 
 const modalStyle = {
   overlay: {
@@ -55,6 +56,8 @@ export function ModalCriarItem({
   isOpen,
   handleCloseModal,
 }: ModalCriarItemProps) {
+  const { token }: any = useAuth();
+
   return (
     <Modal isOpen={isOpen} style={modalStyle} onRequestClose={handleCloseModal}>
       <div className="p-8">
@@ -70,6 +73,7 @@ export function ModalCriarItem({
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify(createLivroData),
               });
@@ -88,6 +92,7 @@ export function ModalCriarItem({
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
                   numSerie: +numSerie,
@@ -100,6 +105,8 @@ export function ModalCriarItem({
                 }),
               });
             }
+
+            handleCloseModal();
           }}
         >
           {({ values }) => (
