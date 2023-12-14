@@ -25,12 +25,8 @@ export function Itens() {
         "http://localhost:3000/material-didatico"
       );
       const materiais = await materiaisData.json();
-      setAllItems(
-        [...livros, ...materiais].sort((a, b) => a.id_item - b.id_item)
-      );
-      setSearchResults(
-        [...livros, ...materiais].sort((a, b) => a.id_item - b.id_item)
-      );
+      setAllItems([...livros, ...materiais].sort((a, b) => a.id - b.id));
+      setSearchResults([...livros, ...materiais].sort((a, b) => a.id - b.id));
     }
     fetchData();
   }, []);
